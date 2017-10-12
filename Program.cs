@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Bitmap_Encoder
 {
@@ -17,7 +20,7 @@ namespace Bitmap_Encoder
                 Directory.CreateDirectory(output);
                 foreach (var fileInfo in new DirectoryInfo(Directory.GetCurrentDirectory()).EnumerateFiles())
                 {
-                    new Encoder().Encode(Path.ChangeExtension(output + (fileInfo.Name), "bmp"), header.Concat(File.ReadAllBytes(fileInfo.FullName)).ToArray());
+                    Encoder.Encode(Path.ChangeExtension(output + (fileInfo.Name), "bmp"), header.Concat(File.ReadAllBytes(fileInfo.FullName)).ToArray());
                 }
                 return;
             }
@@ -26,13 +29,16 @@ namespace Bitmap_Encoder
 
             if (!File.Exists(file)) ErrorDontExist();
 
-            if (Path.GetExtension(file) == "bmp")
+            if (Path.GetExtension(file) == ".bmp")
             {
-
+                using (Bitmap img = (Bitmap)Image.FromFile(file))
+                {
+                    Decoder.Decode(file.Substring(0, file.Length - 4), img);
+                }
             }
             else
             {
-                new Encoder().Encode(Path.ChangeExtension(file, "bmp"), header.Concat(File.ReadAllBytes(file)).ToArray());
+                Encoder.Encode(file + ".bmp", header.Concat(File.ReadAllBytes(file)).ToArray());
             }
 
         }
